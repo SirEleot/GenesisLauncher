@@ -15,30 +15,41 @@ namespace Launcher
     {
         public string ArmaPath { get; set; }
         public string ArmaExeName { get; set; }
+        public string ArmaExeName_x64 { get; set; } //arma3_x64.exe"
         public string ModPath { get; set; }
-        public string Interface { get; set; }
+        public string News { get; set; }
+        public string BattlEyeExeName { get; set; }//arma3battleye.exe
+        public string ServerIpAdress { get; set; }
+        public string ServerPort { get; set; }
+
+        public bool x64 { get; set; }
+        public bool Window { get; set; }
+        public bool HyperThreading { get; set; }
+
         public List<string> Links { get; set; }
         public string KeyName { get; set; }
 
         public static Config Get()
         {
             using(StreamReader r = new StreamReader("Config.json"))
-             {
+            {
                  return JsonConvert.DeserializeObject<Config>(r.ReadToEnd());
-             }
+            }
         }
 
         private void SetArmaPath(string path)
         {
+            if (ArmaPath == path) return;
             ArmaPath = path;
             Save();
         }
         private void SetModPath(string path)
         {
+            if (ModPath == path) return;
             ModPath = path;
             Save();
         }
-        private void Save()
+        public void Save()
         {
             using (StreamWriter w = new StreamWriter("Config.json"))
             {
@@ -46,9 +57,9 @@ namespace Launcher
             }
         }
 
-        public bool GamePathIsValid()
+        public bool GamePathIsValid(string path = null)
         {
-            return File.Exists(ArmaPath + @"\" + ArmaExeName);
+            return File.Exists( (path ?? ArmaPath) + @"\" + ArmaExeName);
         }
         public void GetGamePath()
         {
@@ -61,7 +72,7 @@ namespace Launcher
                 if (Directory.Exists(ArmaPath)) dg.SelectedPath = ArmaPath;
                 if (dg.ShowDialog() == DialogResult.OK)
                 {
-                    if (GamePathIsValid())
+                    if (GamePathIsValid(dg.SelectedPath))
                     {
                         SetArmaPath(dg.SelectedPath);
                         if (Directory.Exists(ModPath) && ModPath != ArmaPath) _startBtn.SetState(StartButtonStates.Update);
@@ -71,7 +82,8 @@ namespace Launcher
                 }
                 else SetArmaPath(ArmaPath);
             }
-            _settings.SetGamePath(_config.ArmaPath);
+            _settings.UpdateSettingsMenu();
+
         }
         public void GetModPath()
         {
@@ -93,7 +105,7 @@ namespace Launcher
                 }
                 else SetModPath(_config.ModPath);
             }
-            _settings.SetModPath(_config.ModPath);
+            _settings.UpdateSettingsMenu();
         }
 
     }

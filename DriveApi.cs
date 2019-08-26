@@ -30,9 +30,9 @@ namespace Launcher
         private string AppName { get; set; } = "Drive API .NET Quickstart";
         public object Systems { get; private set; }
 
-        public DriveApi(Config config)
+        public DriveApi()
         {
-            _config = config;
+            
             UserCredential Result;
             using( FileStream s = new FileStream(@"credentials.json", FileMode.Open, FileAccess.Read))
             {
@@ -43,34 +43,42 @@ namespace Launcher
                     CancellationToken.None,
                     (IDataStore)new FileDataStore(Token, true),
                     (ICodeReceiver) null).Result;
-            }
+            }           
+
+            
             _service = new DriveService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = (IConfigurableHttpClientInitializer)Result,
-                ApplicationName = AppName
+                ApplicationName = AppName,
+                ApiKey = "AIzaSyCDv8idiR2oFemVtqgeSpF23IfBUu_Lo8U"
             });
-
+            
             _remoteFileList =  GetFileList();
             _remoteKeyList = GetFileList(true);
         }
 
         public async void BeginModUpdate_async()
-        {            
-            var progress = new Progress<int>(v => {
-                if (v > 99)
+        {
+            _startBtn.SetState(StartButtonStates.BeginUpdate);
+            var progress = new Progress<object[]>(v => {
+                int val = (int)v[0];
+                string fn = (string)v[1];
+                if (val > 99)
                 {
                     _startBtn.SetState(StartButtonStates.Play);
-                    _progressBar.Value = 100;
-                }else _progressBar.Value = v;
+                    _form.UpdateProgress(100, "Загружается файл: " + fn);
+                }
+                else _form.UpdateProgress(Math.Max(val,1), "Загружается файл: " + fn);
 
             });
-            _progressBar.Value = await Task.Factory.StartNew<int>(() => ProgressUpdate(progress));
+            await Task.Factory.StartNew<object[]>(() => ProgressUpdate(progress));
         }
         
-        private int ProgressUpdate( IProgress<int> progress)
+        private object[] ProgressUpdate( IProgress<object[]> progress)
         {
-            int Total = _remoteFileList.Count;
-            int Complited = 0;
+            int Total = _remoteFileList.Count + _remoteKeyList.Count;
+            int Complited = Directory.GetFiles(_config.ModPath).Length;
+
             foreach (Google.Apis.Drive.v3.Data.File file in _remoteFileList)
             {
                 string FullFileName = _config.ModPath + @"\" + file.Name;
@@ -83,10 +91,12 @@ namespace Launcher
                 }
                 else DownloadFile(file, FullFileName);
                 Complited++;
-                progress.Report(100/Total*Complited);
+                Logger.LogIt(Total.ToString() + " | " + Complited.ToString());
+                progress.Report(new object[] { 100 * Complited / Total, file.Name });
             }
-            
-            return 100;
+
+            progress.Report(new object[] { 100, "Download compleeted" });
+            return new object[] { 100, "Download compleeted" };
         }
 
         private void DownloadFile(Google.Apis.Drive.v3.Data.File file, string path, bool needKey = true)
@@ -102,14 +112,13 @@ namespace Launcher
                             Logger.LogIt($"Ошибка загрузки файла {file.Name}  #1");
                             break;
                         case DownloadStatus.Downloading:
-                            Logger.LogIt($"Загружается файл: {file.Name}");
                             break;
                         case DownloadStatus.Completed:
                             SaveStream(ms, path, file.ModifiedTime.Value);
                             break;
                         case DownloadStatus.Failed:
                             Logger.LogIt($"Ошибка загрузки файла {file.Name}  #2");
-                            break;
+                            break;                            
                         default:
                             break;
                     }

@@ -35,6 +35,9 @@
             this.GTbox_modPath = new System.Windows.Forms.TextBox();
             this.GButton_settingGamePath = new System.Windows.Forms.Button();
             this.GButton_settingModPath = new System.Windows.Forms.Button();
+            this.GCheck_x64 = new System.Windows.Forms.CheckBox();
+            this.GCheck_window = new System.Windows.Forms.CheckBox();
+            this.GCheck_HT = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // GLable_gamePath
@@ -91,11 +94,47 @@
             this.GButton_settingModPath.UseVisualStyleBackColor = true;
             this.GButton_settingModPath.Click += new System.EventHandler(this.GButton_settingModPath_Click);
             // 
+            // GCheck_x64
+            // 
+            this.GCheck_x64.AutoSize = true;
+            this.GCheck_x64.Location = new System.Drawing.Point(15, 132);
+            this.GCheck_x64.Name = "GCheck_x64";
+            this.GCheck_x64.Size = new System.Drawing.Size(168, 17);
+            this.GCheck_x64.TabIndex = 3;
+            this.GCheck_x64.Text = "Запускать х64 версию игры";
+            this.GCheck_x64.UseVisualStyleBackColor = true;
+            this.GCheck_x64.CheckedChanged += new System.EventHandler(this.GCheck_x64_CheckedChanged);
+            // 
+            // GCheck_window
+            // 
+            this.GCheck_window.AutoSize = true;
+            this.GCheck_window.Location = new System.Drawing.Point(15, 155);
+            this.GCheck_window.Name = "GCheck_window";
+            this.GCheck_window.Size = new System.Drawing.Size(203, 17);
+            this.GCheck_window.TabIndex = 3;
+            this.GCheck_window.Text = "Запускать игру в оконном режиме";
+            this.GCheck_window.UseVisualStyleBackColor = true;
+            this.GCheck_window.CheckedChanged += new System.EventHandler(this.GCheck_window_CheckedChanged);
+            // 
+            // GCheck_HT
+            // 
+            this.GCheck_HT.AutoSize = true;
+            this.GCheck_HT.Location = new System.Drawing.Point(15, 178);
+            this.GCheck_HT.Name = "GCheck_HT";
+            this.GCheck_HT.Size = new System.Drawing.Size(372, 17);
+            this.GCheck_HT.TabIndex = 3;
+            this.GCheck_HT.Text = "Включить HyperThrading (для процессоров Intel если поддерживают)";
+            this.GCheck_HT.UseVisualStyleBackColor = true;
+            this.GCheck_HT.CheckedChanged += new System.EventHandler(this.GCheck_HT_CheckedChanged);
+            // 
             // GSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(511, 279);
+            this.Controls.Add(this.GCheck_HT);
+            this.Controls.Add(this.GCheck_window);
+            this.Controls.Add(this.GCheck_x64);
             this.Controls.Add(this.GButton_settingModPath);
             this.Controls.Add(this.GButton_settingGamePath);
             this.Controls.Add(this.GTbox_modPath);
@@ -108,6 +147,7 @@
             this.Name = "GSettings";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Settings";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GSettings_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -121,5 +161,8 @@
         private System.Windows.Forms.TextBox GTbox_modPath;
         private System.Windows.Forms.Button GButton_settingGamePath;
         private System.Windows.Forms.Button GButton_settingModPath;
+        private System.Windows.Forms.CheckBox GCheck_x64;
+        private System.Windows.Forms.CheckBox GCheck_window;
+        private System.Windows.Forms.CheckBox GCheck_HT;
     }
 }

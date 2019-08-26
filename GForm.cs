@@ -22,24 +22,16 @@ namespace Launcher
     public partial class GForm : Form
     {      
         public GForm() {
+            TopMost = true;
             InitializeComponent();
         }
 
-        private void Browser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-           
-        }
-
         private void GForm_Load(object sender, EventArgs e)
-        {  
-            GBrowser.ObjectForScripting = new BrowserApi(GBrowser);
-            GBrowser.Navigate(_config.Interface ?? "http://www.newgenesis.ru/LInterface/launcher.html");
-            _browser = GBrowser;
-            _browser.Refresh(WebBrowserRefreshOption.Completely);
-            _browser.WebBrowserShortcutsEnabled = false;
+        {             
             _startBtn = new StartButtonState(GButton_play);
-            _progressBar = GProgress;
-            _settings = new GSettings();            
+            _settings = new GSettings();
+            _news = new News(this);
+            _news.Parse();
 
             _startBtn.SetState(StartButtonStates.Settings);
             if (_config.ArmaPath == null) _config.GetGamePath();
@@ -50,5 +42,91 @@ namespace Launcher
             };
         }
 
+        public void UpdateProgress(int value, string fileName)
+        {
+            GProgress.Value = value;
+            GLabel_update.Text = fileName;
+            GLabel_progress.Text = $"{value}%";
+        }
+
+        private void GButton_forum_Click(object sender, EventArgs e)
+        {
+            Navigation.GoToLink(sender);
+        }
+
+        private void GButton_settings_Click(object sender, EventArgs e)
+        {
+            Navigation.OpenSettingMenu();
+        }
+
+        private void GButton_close_Click(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void GButton_forum_MouseEnter(object sender, EventArgs e)
+        {
+            Navigation.PlaySoundBtnEnter();
+        }
+
+        private void GButton_min_Click(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Minimized;
+        }
+
+        private void GButton_lk_Click(object sender, EventArgs e)
+        {
+            Navigation.GoToLink(sender);
+        }
+
+        private void GButton_vk_Click(object sender, EventArgs e)
+        {
+            Navigation.GoToLink(sender);
+        }
+
+        private void GButton_youtube_Click(object sender, EventArgs e)
+        {
+            Navigation.GoToLink(sender);
+        }
+
+        private void GButton_lk_MouseEnter(object sender, EventArgs e)
+        {
+            Navigation.PlaySoundBtnEnter();
+        }
+
+        private void GButton_vk_MouseEnter(object sender, EventArgs e)
+        {
+            Navigation.PlaySoundBtnEnter();
+        }
+
+        private void GButton_youtube_MouseEnter(object sender, EventArgs e)
+        {
+            Navigation.PlaySoundBtnEnter();
+        }
+
+        private void GButton_settings_MouseEnter(object sender, EventArgs e)
+        {
+            Navigation.PlaySoundBtnEnter();
+        }
+
+        private void GButton_min_MouseEnter(object sender, EventArgs e)
+        {
+            Navigation.PlaySoundBtnEnter();
+        }
+
+        private void GButton_close_MouseEnter(object sender, EventArgs e)
+        {
+            Navigation.PlaySoundBtnEnter();
+        }
+
+        private void GButton_play_MouseEnter(object sender, EventArgs e)
+        {
+            Navigation.PlaySoundBtnEnter();
+        }
+
+        private void GForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _config.Save();
+        }
     }
 }

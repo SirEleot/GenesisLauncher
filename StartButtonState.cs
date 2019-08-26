@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,7 +40,7 @@ namespace Launcher
             switch (_currentState)
             {
                 case StartButtonStates.Settings:
-                    Navigation.OpenSettingMenu(null, null);
+                    Navigation.OpenSettingMenu();
                     break;
                 case StartButtonStates.Update:
                     _driveApi.StartModCheck();
@@ -56,40 +58,53 @@ namespace Launcher
 
         private void StartGame()
         {
-           
+            string ExeFile = $"{_config.ArmaPath}\\{_config.BattlEyeExeName}";
+            string StartParams = $"  -exe {(_config.x64 ? _config.ArmaExeName_x64 : _config.ArmaExeName)}" +
+                $" -mod=\"{_config.ModPath}\" -noSplash -skipIntro" +
+                $" -connect={_config.ServerIpAdress}" +
+                $" -port={_config.ServerPort}" +
+                $" -password=\"\"" +
+                $" {(_config.HyperThreading ? "-enableHT" : "")}" +
+                $" {(_config.Window ? "-window" : "")}";
+            if (File.Exists(ExeFile))
+            {
+                Logger.LogIt(ExeFile + "\n" + StartParams);
+                Process process = Process.Start(ExeFile, StartParams);
+                Environment.Exit(0);
+            }
         }
 
         private void SetButtonSettings()
         {
-            string Text;
+            System.Drawing.Bitmap Img;
             switch (_currentState)
             {
                 case StartButtonStates.Settings:
-                    Text = "Настройки";
+                    Img =  Properties.Resources.settings;
                     Enabled = true;
                     break;
                 case StartButtonStates.Update:
-                    Text = "Обновить";
+                    Img = Properties.Resources.update;
                     Enabled = true;
                     break;
                 case StartButtonStates.Play:
-                    Text = "Играть";
+                    Img = Properties.Resources.play_button;
                     Enabled = true;
                     break;
                 case StartButtonStates.DontAvailable:
-                    Text = "Сервер не доступен";
+                    Img = Properties.Resources.servernotwork;
                     Enabled = false;
                     break;
                 case StartButtonStates.BeginUpdate:
-                    Text = "Идет обновление";
+                    Img = Properties.Resources.servernotwork;
                     Enabled = false;
                     break;
                 default:
-                    Text = "Сервер не доступен";
+                    Img = Properties.Resources.servernotwork;
                     Enabled = false;
                     break;
             }
-            _button.Text = Text;
+            _button.Image = Img;
         }
 
         public void SetState(StartButtonStates state)

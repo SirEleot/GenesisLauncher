@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Media;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -8,13 +9,13 @@ namespace Launcher
 {
     static class Program
     {
+        public static GForm _form;
         public static DriveApi _driveApi;
         public static Config _config;
-        public static WebBrowser _browser;
         public static StartButtonState _startBtn;
-        public static ProgressBar _progressBar;
         public static GSettings _settings;
-
+        public static SoundPlayer _mediaplayer = new SoundPlayer();
+        public static News _news;
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
@@ -22,10 +23,11 @@ namespace Launcher
         static void Main()
         {
             _config = Config.Get();
-            _driveApi = new DriveApi(_config);
+            _driveApi = new DriveApi();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new GForm());
+            _form = new GForm();
+            Application.Run(_form);
         }
 
     }
